@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Для тебя 💌</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ffd6e8 0%, #ffe9f3 50%, #e8f0ff 100%);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
+    padding: 20px;
+    text-align: center;
+  }
+  .compliments {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .compliment {
+    position: absolute;
+    font-size: 1.1rem;
+    color: #d6336c;
+    font-weight: 600;
+    opacity: 0;
+    animation: floatUp 6s ease-out forwards;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(255,255,255,.8);
+  }
+  @keyframes floatUp {
+    0%   { opacity: 0; transform: translateY(30px) scale(.8); }
+    15%  { opacity: 1; transform: translateY(0) scale(1); }
+    80%  { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-120px) scale(1.1); }
+  }
+  .card {
+    position: relative;
+    z-index: 2;
+    background: rgba(255,255,255,.85);
+    backdrop-filter: blur(8px);
+    border-radius: 28px;
+    padding: 40px 32px;
+    max-width: 460px;
+    box-shadow: 0 20px 60px rgba(214,51,108,.25);
+    animation: cardIn .8s ease-out;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(40px) scale(.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .emoji { font-size: 3rem; margin-bottom: 16px; display: block; }
+  h1 {
+    font-size: 1.6rem;
+    color: #b02a5b;
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+  p {
+    color: #6b4a5a;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .buttons {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  button {
+    border: none;
+    border-radius: 16px;
+    padding: 16px 34px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+    font-family: inherit;
+  }
+  #yesBtn {
+    background: linear-gradient(135deg, #ff5f8f, #d6336c);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(214,51,108,.4);
+  }
+  #yesBtn:hover { transform: scale(1.06); box-shadow: 0 12px 32px rgba(214,51,108,.55); }
+  #yesBtn:active { transform: scale(.97); }
+  #noBtn {
+    background: #f1e4ea;
+    color: #9a7285;
+    position: relative;
+  }
+  .hint {
+    margin-top: 22px;
+    font-size: .85rem;
+    color: #b08a9b;
+  }
+</style>
+</head>
+<body>
+
+<div class="compliments" id="compliments"></div>
+
+<div class="card">
+  <span class="emoji">🌸</span>
+  <h1>Привет, красивая!</h1>
+  <p>Ты — самое лучшее, что случалось со мной за последнее время.<br>
+     Может, сходим погулять? ☕️🌿</p>
+  <div class="buttons">
+    <button id="yesBtn">Да, пойдём! 💖</button>
+    <button id="noBtn">Нет</button>
+  </div>
+  <div class="hint" id="hint">P.S. кнопка «Нет» тут чисто для красоты 😌</div>
+</div>
+
+<script>
+// ====== НАСТРОЙКИ ======
+const YES_URL = "https://t.me/ТВОЙ_НИК"; // куда ведёт "Да" (телеграм, карта, что угодно)
+const COMPLIMENTS = [
+  "Ты невероятно красивая ✨",
+  "Твоя улыбка — лучшее, что есть 💫",
+  "С тобой тепло даже в холод 🌸",
+  "Ты умная и классная 💖",
+  "У тебя прекрасный вкус 🎀",
+  "Ты — моё вдохновение 🌷",
+  "С тобой хочется гулять вечно 🍃",
+  "Ты особенная 💕",
+];
+// =======================
+
+const complimentsBox = document.getElementById('compliments');
+const noBtn = document.getElementById('noBtn');
+const yesBtn = document.getElementById('yesBtn');
+const hint = document.getElementById('hint');
+
+// Осыпаем комплиментами
+function spawnCompliment() {
+  const el = document.createElement('div');
+  el.className = 'compliment';
+  el.textContent = COMPLIMENTS[Math.floor(Math.random() * COMPLIMENTS.length)];
+  el.style.left = Math.random() * 80 + 5 + '%';
+  el.style.top = Math.random() * 70 + 15 + '%';
+  el.style.animationDuration = (4 + Math.random() * 3) + 's';
+  complimentsBox.appendChild(el);
+  setTimeout(() => el.remove(), 7000);
+}
+// стартовый залп
+for (let i = 0; i < 6; i++) setTimeout(spawnCompliment, i * 350);
+// и потом постоянно, но реже
+setInterval(spawnCompliment, 1600);
+
+// "Нет" — не работает: убегает и меняет текст
+const noTexts = ["Нет", "Точно нет?", "Уверена?", "Подумай ещё", "Не-а 😜", "Даже не жми", "Эта кнопка сломана", "Жми «Да» 💖"];
+let noCount = 0;
+
+function dodge() {
+  noBtn.style.transform = `translate(${(Math.random()-0.5)*200}px, ${(Math.random()-0.5)*120}px) scale(${Math.max(0.6, 1 - noCount*0.05)})`;
+  noCount++;
+  noBtn.textContent = noTexts[Math.min(noCount, noTexts.length - 1)];
+  if (noCount === 3) hint.textContent = "Я же говорил 😌";
+  if (noCount === 6) hint.textContent = "Смирись и жми «Да» 💖";
+}
+noBtn.addEventListener('mouseenter', dodge); // на ПК убегает от курсора
+noBtn.addEventListener('click', (e) => { e.preventDefault(); dodge(); }); // на телефоне при тыке
+
+// "Да" — работает
+yesBtn.addEventListener('click', () => {
+  window.location.href = YES_URL;
+});
+</script>
+</body>
+</html>
